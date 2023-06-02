@@ -10,7 +10,10 @@ while True:
     elif user_input == 'r':
         matrix.resetTable()
         matrix.printTable()
-
-
+    elif user_input == 'c':
+        if matrix.checkCoherence():
+            print("everything is fine")
+        else:
+            print("you got it wrong, you asshole")
     else:
         print("invalid input format")
