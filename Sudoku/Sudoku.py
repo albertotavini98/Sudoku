@@ -10,5 +10,7 @@ while True:
     elif user_input == 'r':
         matrix.resetTable()
         matrix.printTable()
+
+
     else:
         print("invalid input format")
