@@ -1,37 +1,77 @@
 
 from tkinter import SE
 
+class SudokuUnit:
+    def __init__(self):
+        self.val = ' '
+        self.possible = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+    def getUnitRepresentation(self):
+        if self.val != ' ':
+            digits = [self.val]*9
+        elif len(self.possible) == 9:
+            digits = [' ']*9
+        else:
+            digits = self.possible
+
+        box = ""
+        for i in range(3):
+                row = "| {} {} {} |\n".format(*(digits[i * 3: i * 3 + 3] + [' '] * (3 - len(digits[i * 3: i * 3 + 3]))))
+                box += row
+        return box
+
+    def assignVal(self, val):
+        self.val = str(val) if val != 0 else ' '
+    
+
 
 class SudokuTable:
     def __init__(self):
-        self.matrix = [['_']*9 for _ in range(9)]
-        self.symbols = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '_']
+        self.matrix = [[SudokuUnit() for i in range(9)] for j in range(9)]
+        self.symbols = ['1', '2', '3', '4', '5', '6', '7', '8', '9', ' ']
 
     
 
     def resetTable(self):
-        self.matrix = [['_']*9 for _ in range(9)] 
+        self.matrix = [[SudokuUnit() for i in range(9)] for j in range(9)]
+    #this uses the box representation of all the 
+    def printRow(self, boxes):
+        boxes_by_lines =[]
+        
+        for i in range(len(boxes)):
+            boxes_by_lines.append(boxes[i].split('\n'))
+     
+        row = ""
+        for i in range(3):
+            row_line = ""
+            for j, box_line in enumerate(boxes_by_lines):
+                row_line += box_line[i]
+                if (j+1)%3== 0:
+                        row_line += " "
+            row_line += "\n"
+            row += row_line
+        print(row)
+            
 
-    #this function prints the 
+
+    #this function prints all the SudokuUnits inside a  
     def printTable(self):
 
         for j, row in enumerate(self.matrix):
             if j %3 == 0 and j!= 0:
                 print("")
-            
-            for i, value in enumerate(row):
-                item = '['+value+']'
-                if i%3 == 0 and i!= 0:
-                    print("  "+item, end= "")
-                else:
-                    print(item, end ="" )
+            boxes = []
+            for i, unit in enumerate(row):
+              
+                boxes.append(unit.getUnitRepresentation())
+            self.printRow(boxes)
 
             print("")
 
 
     #we insert a value if bigger than zero else we empty that cell
     def insertValue(self, x, y, val):
-         self.matrix[x][y] = str(val) if val != 0 else '_'
+         self.matrix[x][y].assignVal(val)
 
 
     #this method check if a string is in the format 'x-y-val' and if yes modifies the table and returns True, else it returns False
@@ -49,14 +89,14 @@ class SudokuTable:
         return True
 
     #this method checks if a list representing a row, column or submatrix has duplicate digits and returns False in that case
-    def checkDigits(self, chars):
+    def checkDigitsInUnits(self, units):
         symbols = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-        for c in chars:
-            if c != '_':
-                if c not in symbols:
+        for unit in units:
+            if unit.val != ' ':
+                if unit.val not in symbols:
                     return False
                 else:
-                    symbols.remove(c)
+                    symbols.remove(unit.val)
 
         return True
 
@@ -74,17 +114,17 @@ class SudokuTable:
     #this method checks if the rows, columns and submatrices of the table respect the sudoku property and returns True if it does
     def checkCoherence(self):
         for row in self.matrix:
-            if not self.checkDigits(row):
+            if not self.checkDigitsInUnits(row):
                 return False
 
         for column in zip(*self.matrix):
-            if not self.checkDigits(column):
+            if not self.checkDigitsInUnits(column):
                 return False
 
         submatrices_as_lists = self.divideIn3by3()
 
         for item in submatrices_as_lists:
-            if not self.checkDigits(item):
+            if not self.checkDigitsInUnits(item):
                 return False
 
         return True

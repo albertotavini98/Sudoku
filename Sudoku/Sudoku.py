@@ -1,7 +1,9 @@
 import data_structures
 
 matrix = data_structures.SudokuTable()
+matrix.checkInsertString('0-0-1')
 matrix.printTable()
+
 while True:
     print("Enter a set of coordinates and a value in the format 'x-y-val', or 'R' to reset the table")
     user_input = input()
