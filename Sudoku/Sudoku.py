@@ -1,7 +1,12 @@
 import data_structures
+import graphics
+
+interface = graphics.GraphicalInterface()
+interface.runGame()
+
+"""
 
 matrix = data_structures.SudokuTable()
-matrix.checkInsertString('0-0-1')
 matrix.printTable()
 
 while True:
@@ -19,3 +24,5 @@ while True:
             print("you got it wrong, you asshole")
     else:
         print("invalid input format")
+
+"""

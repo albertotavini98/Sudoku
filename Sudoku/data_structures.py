@@ -1,18 +1,25 @@
 
 from tkinter import SE
+import copy
 
 class SudokuUnit:
     def __init__(self):
         self.val = ' '
-        self.possible = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+        self.possibles = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+    def getVal(self):
+        return self.val
+
+    def getPossibles(self):
+        return self.possibles
 
     def getUnitRepresentation(self):
         if self.val != ' ':
             digits = [self.val]*9
-        elif len(self.possible) == 9:
+        elif len(self.possibles) == 9:
             digits = [' ']*9
         else:
-            digits = self.possible
+            digits = self.possibles
 
         box = ""
         for i in range(3):
@@ -25,15 +32,21 @@ class SudokuUnit:
     
 
 
+
+
+
 class SudokuTable:
     def __init__(self):
-        self.matrix = [[SudokuUnit() for i in range(9)] for j in range(9)]
+        self.original_matrix = [[SudokuUnit() for i in range(9)] for j in range(9)]
+        self.matrix = copy.deepcopy( self.original_matrix)
         self.symbols = ['1', '2', '3', '4', '5', '6', '7', '8', '9', ' ']
 
-    
+    def getMatrix(self):
+        return self.matrix
 
     def resetTable(self):
-        self.matrix = [[SudokuUnit() for i in range(9)] for j in range(9)]
+        self.matrix = copy.deepcopy( self.original_matrix)
+
     #this uses the box representation of all the 
     def printRow(self, boxes):
         boxes_by_lines =[]
@@ -69,9 +82,13 @@ class SudokuTable:
             print("")
 
 
-    #we insert a value if bigger than zero else we empty that cell
+    #we insert a value if possible (we check it was an empty cell in the original matrix ) and return boolean
     def insertValue(self, x, y, val):
-         self.matrix[x][y].assignVal(val)
+        if self.original_matrix.getVal() == ' ':
+            self.matrix[x][y].assignVal(val)
+            return True
+        else:
+            return False
 
 
     #this method check if a string is in the format 'x-y-val' and if yes modifies the table and returns True, else it returns False
