@@ -75,6 +75,29 @@ class SudokuTable:
     def getMatrix(self):
         return self.matrix
 
+    #initializations are saved as .txt. files 
+    #and contenti is taken from the compact output format generated from https://qqwing.com/generate.html
+    def pickInitialization(self, folder):
+        import os
+        files = os.listdir(folder)
+        txt_files = [file for file in files if file.endswith(".txt")]
+        chosen_file = random.choice(txt_files)
+        file_path = os.path.join(folder, chosen_file)
+        with open(file_path, 'r') as file:
+            content = file.read()
+            print(f"Content of file '{chosen_file}':")
+            rows = content.split('\n')
+            for i, row in enumerate(rows):
+                for j ,char in enumerate(row):
+                    if char != '.':
+                        self.original_matrix[i][j].assignVal(char)
+
+        self.checkMatrix = copy.deepcopy(self.original_matrix)
+        self.matrix = copy.deepcopy(self.original_matrix)
+
+
+
+    #obviously if you use this there is high probability the sudoku cannot be solved 
     def randomInitialization(self, difficulty):
         counter = difficulty.value
         while counter > 0:

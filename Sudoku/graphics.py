@@ -25,7 +25,8 @@ class GraphicalInterface:
         submatrix_size = cell_size * 3
 
         sudoku = self.sudokuTable
-        sudoku.randomInitialization(self.difficulty)
+        sudoku.pickInitialization('initializations')
+        #sudoku.randomInitialization(self.difficulty)
 
         running = True
         while running:
@@ -75,7 +76,10 @@ class GraphicalInterface:
                     elif 650 <= mouse_pos[0] <= 750 and 670 <= mouse_pos[1] <= 710:
                         print("you demanded a resolution")
                         # Solve button clicked
-                        sudoku.solvingIteration()
+                        n = 0
+                        while n <50:
+                            sudoku.solvingIteration()
+                            n +=1
 
                     # Clear the window
                 window.fill(WHITE)
