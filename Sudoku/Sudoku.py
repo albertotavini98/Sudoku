@@ -1,6 +1,7 @@
 import data_structures
 import graphics
 
+print("started")
 interface = graphics.GraphicalInterface()
 interface.runGame()
 

@@ -1,6 +1,13 @@
 
 from tkinter import SE
 import copy
+from enum import Enum
+import random
+
+class Difficulty(Enum):
+    LOW = 30
+    MEDIUM = 25
+    HIGH = 20
 
 class SudokuUnit:
     def __init__(self):
@@ -10,8 +17,31 @@ class SudokuUnit:
     def getVal(self):
         return self.val
 
+
+    #this is for assignment from integer, if we clean it we restore the possible values
+    def assignVal(self, val):
+        self.val = val
+        if self.val == ' ':
+           self.possibles = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+        else:
+            self.possibles = []
+
     def getPossibles(self):
         return self.possibles
+
+    def removeFromPossibles(self, value):
+        if value in self.possibles:
+            self.possibles.remove(value)
+            return True
+        else:
+            return False
+
+    def addToPossibles(self, value):
+        if value not in self.possibles:
+            self.possibiles.append(value)
+            return True
+        else:
+            return False
 
     def getUnitRepresentation(self):
         if self.val != ' ':
@@ -27,8 +57,7 @@ class SudokuUnit:
                 box += row
         return box
 
-    def assignVal(self, val):
-        self.val = str(val) if val != 0 else ' '
+    
     
 
 
@@ -38,11 +67,35 @@ class SudokuUnit:
 class SudokuTable:
     def __init__(self):
         self.original_matrix = [[SudokuUnit() for i in range(9)] for j in range(9)]
-        self.matrix = copy.deepcopy( self.original_matrix)
+        self.checkMatrix = copy.deepcopy(self.original_matrix)
+        self.matrix = copy.deepcopy(self.original_matrix)
         self.symbols = ['1', '2', '3', '4', '5', '6', '7', '8', '9', ' ']
+        self
 
     def getMatrix(self):
         return self.matrix
+
+    def randomInitialization(self, difficulty):
+        counter = difficulty.value
+        while counter > 0:
+            #we generate an insertion
+            x = random.randint(0, 8)
+            y = random.randint(0, 8)
+            val = random.randint(1,9)
+            #if the box is empty
+            if self.original_matrix[x][y].getVal() == ' ':
+                #we copy the matrix
+                self.checkMatrix = copy.deepcopy(self.original_matrix)
+                #then insert and check consistence with sudoku property, and if correct we decrease the number of entries to make, otherwise we copy again the matrix
+                self.original_matrix[x][y].assignVal(str(val))
+                if not self.checkCoherence(True):
+                     self.original_matrix = copy.deepcopy(self.checkMatrix)
+                else:
+                    counter -= 1
+
+        
+        self.matrix = copy.deepcopy(self.original_matrix)
+
 
     def resetTable(self):
         self.matrix = copy.deepcopy( self.original_matrix)
@@ -118,23 +171,29 @@ class SudokuTable:
         return True
 
     #this method divides the matrix in 3x3 submatrices and returns them as a list of lists, so we can use the checkDigits method on them
-    def divideIn3by3(self):
+    def divideIn3by3(self, original = False):
+        #check which matrix we need to use
+        matrix = self.original_matrix if original else self.matrix
         submatrices_as_lists = []
         for i in range(0, 9, 3):
             for j in range(0, 9, 3):
-                submatrix = [num for row in self.matrix[i:i+3] for num in row[j:j+3]]
+                submatrix = [num for row in matrix[i:i+3] for num in row[j:j+3]]
                 submatrices_as_lists.append(submatrix)
 
         return submatrices_as_lists
 
 
     #this method checks if the rows, columns and submatrices of the table respect the sudoku property and returns True if it does
-    def checkCoherence(self):
-        for row in self.matrix:
+    #the second parameter needs to be set to true if we want to check on the original matrix during initialization
+    def checkCoherence(self, original = False):
+        #check which matrix we need to use
+        matrix = self.original_matrix if original else self.matrix
+
+        for row in matrix:
             if not self.checkDigitsInUnits(row):
                 return False
 
-        for column in zip(*self.matrix):
+        for column in zip(*matrix):
             if not self.checkDigitsInUnits(column):
                 return False
 
@@ -145,3 +204,39 @@ class SudokuTable:
                 return False
 
         return True
+
+    #this function does one check for all the rows, one for all the columns and one for all the submatrices 
+    #and reduces the possibles list by confronting with available values.
+    #if one list becomes equal to one, it sets the value of the cell to that value
+    def solvingIteration(self):
+
+        #we use a helper function to cross compare
+        def compareBoxes(boxes):
+            values = [box.getVal() for box in boxes if box.getVal() != ' ']
+            for box in boxes:
+                for val in values:
+                    box.removeFromPossibles(val)
+        #and one helper function to assign a value
+        def confirmValues(boxes):
+            for box in boxes:
+                if len(box.getPossibles()) == 1 and box.getVal() == ' ':
+                    box.assignVal(box.getPossibles()[0])
+
+        submatrices_as_lists = self.divideIn3by3()
+        for item in submatrices_as_lists:
+            compareBoxes(item)
+
+        for row in self.matrix:
+            compareBoxes(row)
+            confirmValues(row)
+
+        for column in zip(*self.matrix):
+            compareBoxes(column)
+            confirmValues(column)
+
+        
+
+        
+
+
+            
