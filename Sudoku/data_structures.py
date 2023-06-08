@@ -22,7 +22,6 @@ class SudokuTable:
         self.matrix = None
         self.savedMatrix = None
         self.symbols = ['1', '2', '3', '4', '5', '6', '7', '8', '9', ' ']
-        self
 
     def getMatrix(self):
         return self.matrix
@@ -37,7 +36,7 @@ class SudokuTable:
         file_path = os.path.join(folder, chosen_file)
         with open(file_path, 'r') as file:
             content = file.read()
-            print(f"Content of file '{chosen_file}':")
+            #print(f"Content of file '{chosen_file}':")
             rows = content.split('\n')
             for i, row in enumerate(rows):
                 for j ,char in enumerate(row):
@@ -191,6 +190,14 @@ class SudokuTable:
             return False
         
         return True
+
+    def changePossibles(self, x, y,val):
+            if val in self.matrix[x][y].getPossibles():
+                #the check is needed because emptying the list causes problems
+                if len(self.matrix[x][y].getPossibles()) > 1:
+                    self.matrix[x][y].removeFromPossibles(val)
+            else:
+                self.matrix[x][y].addToPossibles(val)
 
 
     #this function does one check for all the rows, one for all the columns and one for all the submatrices 

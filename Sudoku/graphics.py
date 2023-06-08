@@ -86,7 +86,7 @@ class GraphicalInterface:
 
 
     #a utility method to draw the board of the sudoku game
-    def drawGameBoard(self, sudoku, board_size, cell_size, submatrix_size, window):
+    def drawGameBoard(self, sudoku, board_size, cell_size, submatrix_size, window, showPossibles):
         BLACK = (0, 0, 0)
         GRAY = (128, 128, 128)
         for x in range(0, board_size + 1, cell_size):
@@ -106,7 +106,7 @@ class GraphicalInterface:
                         text_rect = text.get_rect(center=(j * cell_size + cell_size // 2, i * cell_size + cell_size // 2))
                         window.blit(text, text_rect)
                     #otherwise we print the list of possible values for it
-                    elif len(sudoku.getMatrix()[i][j].getPossibles() ) < 10:
+                    elif showPossibles and len(sudoku.getMatrix()[i][j].getPossibles() ) < 10:
                         for k, possible in enumerate(sudoku.getMatrix()[i][j].getPossibles()):
                             font = pygame.font.Font(None, 18)
                             text = font.render(possible, True, BLACK)
@@ -139,7 +139,8 @@ class GraphicalInterface:
 
         sudoku = self.sudokuTable
         sudoku.pickInitialization('initializations')
-        #sudoku.randomInitialization(self.difficulty)
+        touchPossibles = False
+        showPossibles = False
 
         running = True
         while running:
@@ -157,29 +158,61 @@ class GraphicalInterface:
                     # Modify the clicked cell value
                     
                 elif event.type == pygame.KEYDOWN:
-                    try:
-                        if event.key == pygame.K_1:
-                            sudoku.tryMove(selected_row, selected_col,str(1))
-                        elif event.key == pygame.K_2:
-                             sudoku.tryMove(selected_row, selected_col,str(2))
-                        elif event.key == pygame.K_3:
-                             sudoku.tryMove(selected_row, selected_col,str(3))
-                        elif event.key == pygame.K_4:
-                             sudoku.tryMove(selected_row, selected_col,str(4))
-                        elif event.key == pygame.K_5:
-                             sudoku.tryMove(selected_row, selected_col,str(5))
-                        elif event.key == pygame.K_6:
-                             sudoku.tryMove(selected_row, selected_col,str(6))
-                        elif event.key == pygame.K_7:
-                             sudoku.tryMove(selected_row, selected_col,str(7))
-                        elif event.key == pygame.K_8:
-                             sudoku.tryMove(selected_row, selected_col,str(8))
-                        elif event.key == pygame.K_9:
-                             sudoku.tryMove(selected_row, selected_col,str(9))
-                        elif event.key == pygame.K_BACKSPACE:
-                            sudoku.tryMove(selected_row, selected_col,' ')
-                    except:
-                        print("Exception! no values can be inserted there")
+                        #if we toggle the spacebar we want to modify the list of possibles
+                        if event.key == pygame.K_SPACE:
+                            touchPossibles = not touchPossibles
+                        elif event.key == pygame.K_CAPSLOCK:
+                            showPossibles = not showPossibles
+                        #so if not toggled we just modify the number in the cell
+                        if not touchPossibles:
+                            try:
+                                if event.key == pygame.K_BACKSPACE:
+                                    sudoku.tryMove(selected_row, selected_col,' ')
+                                elif event.key == pygame.K_1:
+                                    sudoku.tryMove(selected_row, selected_col,str(1))
+                                elif event.key == pygame.K_2:
+                                     sudoku.tryMove(selected_row, selected_col,str(2))
+                                elif event.key == pygame.K_3:
+                                     sudoku.tryMove(selected_row, selected_col,str(3))
+                                elif event.key == pygame.K_4:
+                                     sudoku.tryMove(selected_row, selected_col,str(4))
+                                elif event.key == pygame.K_5:
+                                     sudoku.tryMove(selected_row, selected_col,str(5))
+                                elif event.key == pygame.K_6:
+                                     sudoku.tryMove(selected_row, selected_col,str(6))
+                                elif event.key == pygame.K_7:
+                                     sudoku.tryMove(selected_row, selected_col,str(7))
+                                elif event.key == pygame.K_8:
+                                     sudoku.tryMove(selected_row, selected_col,str(8))
+                                elif event.key == pygame.K_9:
+                                     sudoku.tryMove(selected_row, selected_col,str(9))
+                            except:
+                                print("Exception! no values can be inserted there") 
+                            
+                        #if toggled we just change the val in the possibles list
+                        else:
+                            try:
+                                if event.key == pygame.K_1:
+                                    sudoku.changePossibles(selected_row, selected_col,str(1))
+                                elif event.key == pygame.K_2:
+                                     sudoku.changePossibles(selected_row, selected_col,str(2))
+                                elif event.key == pygame.K_3:
+                                     sudoku.changePossibles(selected_row, selected_col,str(3))
+                                elif event.key == pygame.K_4:
+                                     sudoku.changePossibles(selected_row, selected_col,str(4))
+                                elif event.key == pygame.K_5:
+                                     sudoku.changePossibles(selected_row, selected_col,str(5))
+                                elif event.key == pygame.K_6:
+                                     sudoku.changePossibles(selected_row, selected_col,str(6))
+                                elif event.key == pygame.K_7:
+                                     sudoku.changePossibles(selected_row, selected_col,str(7))
+                                elif event.key == pygame.K_8:
+                                     sudoku.changePossibles(selected_row, selected_col,str(8))
+                                elif event.key == pygame.K_9:
+                                     sudoku.changePossibles(selected_row, selected_col,str(9))
+                            except:
+                                print("Exception! no values can be inserted there")
+                            
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     mouse_pos = pygame.mouse.get_pos()
@@ -207,8 +240,11 @@ class GraphicalInterface:
 
                     # Clear the window
                 window.fill(WHITE)
+
+
+
             #we draw the game board, using more thick lines to delimit the 3x3 submatrices
-            self.drawGameBoard(sudoku, board_size, cell_size, submatrix_size, window)
+            self.drawGameBoard(sudoku, board_size, cell_size, submatrix_size, window, showPossibles)
 
 
             font = pygame.font.Font(None, 28)
