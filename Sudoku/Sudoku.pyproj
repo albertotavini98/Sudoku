@@ -24,6 +24,7 @@
     <Compile Include="data_structures.py" />
     <Compile Include="graphics.py" />
     <Compile Include="Sudoku.py" />
+    <Compile Include="sudokublock.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="initializations\" />

@@ -3,6 +3,7 @@ import graphics
 
 print("started")
 interface = graphics.GraphicalInterface()
+interface.initialize_interface()
 interface.runGame()
 
 """

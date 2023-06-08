@@ -1,64 +1,15 @@
 
 from tkinter import SE
 import copy
-from enum import Enum
 import random
+from enum import Enum
+from sudokublock import SudokuUnit
+
 
 class Difficulty(Enum):
     LOW = 30
     MEDIUM = 25
     HIGH = 20
-
-class SudokuUnit:
-    def __init__(self):
-        self.val = ' '
-        self.possibles = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-
-    def getVal(self):
-        return self.val
-
-
-    #this is for assignment from integer, if we clean it we restore the possible values
-    def assignVal(self, val):
-        self.val = val
-        if self.val == ' ':
-           self.possibles = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-        else:
-            self.possibles = []
-
-    def getPossibles(self):
-        return self.possibles
-
-    def removeFromPossibles(self, value):
-        if value in self.possibles:
-            self.possibles.remove(value)
-            return True
-        else:
-            return False
-
-    def addToPossibles(self, value):
-        if value not in self.possibles:
-            self.possibiles.append(value)
-            return True
-        else:
-            return False
-
-    def getUnitRepresentation(self):
-        if self.val != ' ':
-            digits = [self.val]*9
-        elif len(self.possibles) == 9:
-            digits = [' ']*9
-        else:
-            digits = self.possibles
-
-        box = ""
-        for i in range(3):
-                row = "| {} {} {} |\n".format(*(digits[i * 3: i * 3 + 3] + [' '] * (3 - len(digits[i * 3: i * 3 + 3]))))
-                box += row
-        return box
-
-    
-    
 
 
 
@@ -66,9 +17,10 @@ class SudokuUnit:
 
 class SudokuTable:
     def __init__(self):
-        self.original_matrix = [[SudokuUnit() for i in range(9)] for j in range(9)]
-        self.checkMatrix = copy.deepcopy(self.original_matrix)
-        self.matrix = copy.deepcopy(self.original_matrix)
+        self.originalMatrix = [[SudokuUnit() for i in range(9)] for j in range(9)]
+        self.checkMatrix = None
+        self.matrix = None
+        self.savedMatrix = None
         self.symbols = ['1', '2', '3', '4', '5', '6', '7', '8', '9', ' ']
         self
 
@@ -90,10 +42,11 @@ class SudokuTable:
             for i, row in enumerate(rows):
                 for j ,char in enumerate(row):
                     if char != '.':
-                        self.original_matrix[i][j].assignVal(char)
+                        self.originalMatrix[i][j].assignVal(char)
 
-        self.checkMatrix = copy.deepcopy(self.original_matrix)
-        self.matrix = copy.deepcopy(self.original_matrix)
+        self.checkMatrix = copy.deepcopy(self.originalMatrix)
+        self.matrix = copy.deepcopy(self.originalMatrix)
+        self.savedMatrix = copy.deepcopy(self.originalMatrix)
 
 
 
@@ -106,22 +59,24 @@ class SudokuTable:
             y = random.randint(0, 8)
             val = random.randint(1,9)
             #if the box is empty
-            if self.original_matrix[x][y].getVal() == ' ':
+            if self.originalMatrix[x][y].getVal() == ' ':
                 #we copy the matrix
-                self.checkMatrix = copy.deepcopy(self.original_matrix)
+                self.checkMatrix = copy.deepcopy(self.originalMatrix)
                 #then insert and check consistence with sudoku property, and if correct we decrease the number of entries to make, otherwise we copy again the matrix
-                self.original_matrix[x][y].assignVal(str(val))
+                self.originalMatrix[x][y].assignVal(str(val))
                 if not self.checkCoherence(True):
-                     self.original_matrix = copy.deepcopy(self.checkMatrix)
+                     self.originalMatrix = copy.deepcopy(self.checkMatrix)
                 else:
                     counter -= 1
 
         
-        self.matrix = copy.deepcopy(self.original_matrix)
+        self.checkMatrix = copy.deepcopy(self.originalMatrix)
+        self.matrix = copy.deepcopy(self.originalMatrix)
+        self.savedMatrix = copy.deepcopy(self.originalMatrix)
 
 
     def resetTable(self):
-        self.matrix = copy.deepcopy( self.original_matrix)
+        self.matrix = copy.deepcopy( self.originalMatrix)
 
     #this uses the box representation of all the 
     def printRow(self, boxes):
@@ -160,7 +115,7 @@ class SudokuTable:
 
     #we insert a value if possible (we check it was an empty cell in the original matrix ) and return boolean
     def insertValue(self, x, y, val):
-        if self.original_matrix.getVal() == ' ':
+        if self.originalMatrix.getVal() == ' ':
             self.matrix[x][y].assignVal(val)
             return True
         else:
@@ -196,7 +151,7 @@ class SudokuTable:
     #this method divides the matrix in 3x3 submatrices and returns them as a list of lists, so we can use the checkDigits method on them
     def divideIn3by3(self, original = False):
         #check which matrix we need to use
-        matrix = self.original_matrix if original else self.matrix
+        matrix = self.originalMatrix if original else self.matrix
         submatrices_as_lists = []
         for i in range(0, 9, 3):
             for j in range(0, 9, 3):
@@ -210,7 +165,7 @@ class SudokuTable:
     #the second parameter needs to be set to true if we want to check on the original matrix during initialization
     def checkCoherence(self, original = False):
         #check which matrix we need to use
-        matrix = self.original_matrix if original else self.matrix
+        matrix = self.originalMatrix if original else self.matrix
 
         for row in matrix:
             if not self.checkDigitsInUnits(row):
@@ -256,6 +211,36 @@ class SudokuTable:
         for column in zip(*self.matrix):
             compareBoxes(column)
             confirmValues(column)
+    
+    #a method to see if the game has been solved
+    def checkSolved(self):
+        for row in self.matrix:
+            for box in row:
+                if box.getVal() == ' ':
+                    return False
+
+        return True
+
+    #a method to solve the entire game
+    def solve(self):
+        cont = True
+        n = 0
+        while cont:
+            self.solvingIteration()
+            if (n% 20 == 0 and self.checkSolved()) or n == 50:
+                cont = False
+            n +=1
+
+    def saveState(self):
+        self.savedMatrix = copy.deepcopy(self.matrix)
+
+    def revertState(self):
+        self.matrix = copy.deepcopy(self.savedMatrix)
+        self.checkMatrix = copy.deepcopy(self.savedMatrix)
+
+
+
+
 
         
 
