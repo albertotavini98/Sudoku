@@ -8,6 +8,7 @@ class GraphicalInterface:
         self.difficulty = Difficulty.LOW
 
     
+    #a method so that a first window pops up allowing to choose a difficulty for the game
     def initialize_interface(self):
         pygame.init()
 
@@ -83,6 +84,8 @@ class GraphicalInterface:
         # Quit Pygame
         pygame.quit()
 
+
+    #a utility method to draw the board of the sudoku game
     def drawGameBoard(self, sudoku, board_size, cell_size, submatrix_size, window):
         BLACK = (0, 0, 0)
         GRAY = (128, 128, 128)
@@ -115,7 +118,8 @@ class GraphicalInterface:
                             
                             window.blit(text, text_rect)
 
-       
+
+        
 
     def runGame(self):
         pygame.init()
@@ -139,6 +143,7 @@ class GraphicalInterface:
 
         running = True
         while running:
+            
             #here we deal with mouse clicks and keyboard presses
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -154,25 +159,25 @@ class GraphicalInterface:
                 elif event.type == pygame.KEYDOWN:
                     try:
                         if event.key == pygame.K_1:
-                            sudoku.getMatrix()[selected_row][selected_col].assignVal(str(1))
+                            sudoku.tryMove(selected_row, selected_col,str(1))
                         elif event.key == pygame.K_2:
-                            sudoku.getMatrix()[selected_row][selected_col].assignVal(str(2))
+                             sudoku.tryMove(selected_row, selected_col,str(2))
                         elif event.key == pygame.K_3:
-                            sudoku.getMatrix()[selected_row][selected_col].assignVal(str(3))
+                             sudoku.tryMove(selected_row, selected_col,str(3))
                         elif event.key == pygame.K_4:
-                            sudoku.getMatrix()[selected_row][selected_col].assignVal(str(4))
+                             sudoku.tryMove(selected_row, selected_col,str(4))
                         elif event.key == pygame.K_5:
-                            sudoku.getMatrix()[selected_row][selected_col].assignVal(str(5))
+                             sudoku.tryMove(selected_row, selected_col,str(5))
                         elif event.key == pygame.K_6:
-                            sudoku.getMatrix()[selected_row][selected_col].assignVal(str(6))
+                             sudoku.tryMove(selected_row, selected_col,str(6))
                         elif event.key == pygame.K_7:
-                            sudoku.getMatrix()[selected_row][selected_col].assignVal(str(7))
+                             sudoku.tryMove(selected_row, selected_col,str(7))
                         elif event.key == pygame.K_8:
-                            sudoku.getMatrix()[selected_row][selected_col].assignVal(str(8))
+                             sudoku.tryMove(selected_row, selected_col,str(8))
                         elif event.key == pygame.K_9:
-                            sudoku.getMatrix()[selected_row][selected_col].assignVal(str(9))
+                             sudoku.tryMove(selected_row, selected_col,str(9))
                         elif event.key == pygame.K_BACKSPACE:
-                            sudoku.getMatrix()[selected_row][selected_col].assignVal(' ')
+                            sudoku.tryMove(selected_row, selected_col,' ')
                     except:
                         print("Exception! no values can be inserted there")
 

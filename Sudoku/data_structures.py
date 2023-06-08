@@ -183,6 +183,16 @@ class SudokuTable:
 
         return True
 
+    def tryMove(self, x, y , val):
+        self.checkMatrix = copy.deepcopy(self.matrix)
+        self.matrix[x][y].assignVal(val)
+        if not self.checkCoherence():
+            self.matrix = copy.deepcopy(self.checkMatrix)
+            return False
+        
+        return True
+
+
     #this function does one check for all the rows, one for all the columns and one for all the submatrices 
     #and reduces the possibles list by confronting with available values.
     #if one list becomes equal to one, it sets the value of the cell to that value
@@ -227,7 +237,7 @@ class SudokuTable:
         n = 0
         while cont:
             self.solvingIteration()
-            if (n% 20 == 0 and self.checkSolved()) or n == 50:
+            if (n% 20 == 0 and self.checkSolved()) or n == 100:
                 cont = False
             n +=1
 
