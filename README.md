@@ -1,2 +1,1 @@
-This is just a simple python project to train and demonstrate my python programming skills. 
-It will be an interface for playing sudoku that will include also a sudoku solver
+A simple project to train my python programming skills, an object oriented implementation that allows to play and solve sudoku games throught a pygame graphical interface.
