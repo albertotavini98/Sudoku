@@ -125,7 +125,7 @@ class GraphicalInterface:
         pygame.init()
 
         # Set up the window
-        window_size = (1000, 700)
+        window_size = (1050, 700)
         window = pygame.display.set_mode(window_size)
         pygame.display.set_caption("Sudoku")
 
@@ -133,6 +133,10 @@ class GraphicalInterface:
         BLACK = (0, 0, 0)
         WHITE = (255, 255, 255)
         GRAY = (128, 128, 128)
+        LIGHT_RED = (225, 125, 125)
+        LIGHT_BLUE = ( 100, 100, 175)
+        LIGHT_GREEN = ( 100, 175, 100)
+        LIGHT_GRAY = (200, 200, 200)
         cell_size = 70
         board_size = cell_size * 9
         submatrix_size = cell_size * 3
@@ -247,36 +251,52 @@ class GraphicalInterface:
             self.drawGameBoard(sudoku, board_size, cell_size, submatrix_size, window, showPossibles)
 
 
+            
             font = pygame.font.Font(None, 28)
             # Draw hint button
-            pygame.draw.rect(window, (200, 200, 200), (800, 70, 100, 40))
+            pygame.draw.rect(window, LIGHT_GREEN , (800, 70, 100, 40))
             text = font.render("Hint", True, BLACK)
             text_rect = text.get_rect(center=(850, 90))
             window.blit(text, text_rect)
 
             # Draw save state button
-            pygame.draw.rect(window, (200, 200, 200), (800, 120, 100, 40))
+            pygame.draw.rect(window, LIGHT_RED , (800, 120, 100, 40))
             text = font.render("Save", True, BLACK)
             text_rect = text.get_rect(center=(850, 140))
             window.blit(text, text_rect)
 
-            # Draw solve button
-            pygame.draw.rect(window, (200, 200, 200), (800, 170, 100, 40))
+            # Draw revert button
+            pygame.draw.rect(window, LIGHT_RED , (800, 170, 100, 40))
             text = font.render("Revert", True, BLACK)
             text_rect = text.get_rect(center=(850, 190))
             window.blit(text, text_rect)
 
             # Draw reset button
-            pygame.draw.rect(window, (200, 200, 200), (800, 220, 100, 40))
+            pygame.draw.rect(window, LIGHT_BLUE, (800, 220, 100, 40))
             text = font.render("Reset", True, BLACK)
             text_rect = text.get_rect(center=(850, 240))
             window.blit(text, text_rect)
 
             # Draw solve button
-            pygame.draw.rect(window, (200, 200, 200), (800, 270, 100, 40))
+            pygame.draw.rect(window, LIGHT_BLUE , (800, 270, 100, 40))
             text = font.render("Solve", True, BLACK)
             text_rect = text.get_rect(center=(850, 290))
             window.blit(text, text_rect)
+
+            #draw the explanation box 
+            font = pygame.font.Font(None, 18)
+            pygame.draw.rect(window, LIGHT_GRAY, (700, 370, 300, 250))
+            lines = [ 'BACKSPACE to delete an insertion', 'NUM KEYS to insert a value', 'CAPSLOCK to hide/show possibles' ]
+            lines += ['FUNCTIONS:', 'HINT: cut the possible lists', 'SAVE: memorize current table', 'REVERT: go back to last saved table', 'RESET: go back to initialization', 'SOLVE: conclude the game for me']
+            if touchPossibles:
+                lines =  ['HOW TO PLAY:', "Editing possibles, not answers (TAB to switch)" ] + lines
+            else:
+                lines =  ['HOW TO PLAY:',"Editing numbers themselves (TAB to switch)"] + lines 
+
+            for i, line in enumerate(lines):
+                text = font.render(line, True, BLACK)
+                text_rect = text.get_rect(topleft=(705, 375+i*20))
+                window.blit(text, text_rect)
 
             
 
