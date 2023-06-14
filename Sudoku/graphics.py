@@ -286,8 +286,8 @@ class GraphicalInterface:
             #draw the explanation box 
             font = pygame.font.Font(None, 18)
             pygame.draw.rect(window, LIGHT_GRAY, (700, 370, 300, 250))
-            lines = [ 'BACKSPACE to delete an insertion', 'NUM KEYS to insert a value', 'CAPSLOCK to hide/show possibles' ]
-            lines += ['FUNCTIONS:', 'HINT: cut the possible lists', 'SAVE: memorize current table', 'REVERT: go back to last saved table', 'RESET: go back to initialization', 'SOLVE: conclude the game for me']
+            lines = ['BACKSPACE to delete an insertion', 'NUM KEYS to insert a value', 'CAPSLOCK to hide/show possibles' ]
+            lines += ['', 'FUNCTIONS:', 'HINT: cut the possible lists', 'SAVE: memorize current table', 'REVERT: go back to last saved table', 'RESET: go back to initialization', 'SOLVE: conclude the game for me']
             if touchPossibles:
                 lines =  ['HOW TO PLAY:', "Editing possibles, not answers (TAB to switch)" ] + lines
             else:
